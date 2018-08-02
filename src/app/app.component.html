@@ -1,0 +1,11 @@
+<div class="text-center box">
+  <button class="btn btn-primary" (click)="download()">
+    <i class="fa fa-download"></i>
+  </button>
+  <div class="bar">
+    <div class="progress" [style.width.%]="percentDone"></div>
+  </div>
+  <div class="speed" *ngIf="percentDone > 0">
+    {{speed | number : '1.2-2'}} {{unit}}
+  </div>
+</div>
