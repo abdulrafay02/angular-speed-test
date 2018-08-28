@@ -1,10 +1,6 @@
-import { Component, OnInit } from "@angular/core";
-import {
-  HttpClient,
-  HttpRequest,
-  HttpEventType,
-  HttpResponse
-} from "@angular/common/http";
+import { Component } from "@angular/core";
+import { HttpClient, HttpEventType, HttpResponse } from "@angular/common/http";
+import { FileDownloaderService } from "./file-downloader.service";
 
 @Component({
   selector: "app-root",
@@ -13,9 +9,10 @@ import {
 })
 export class AppComponent {
   title = "app";
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {}
+  constructor(
+    private http: HttpClient,
+    private downloader: FileDownloaderService
+  ) {}
 
   percentDone: number;
   startTime: any;
@@ -28,12 +25,7 @@ export class AppComponent {
   unit: string = "Mbps";
 
   download() {
-    const req = new HttpRequest("GET", "assets/Upload/SpeedTest_32MB.dat", {
-      responseType: "blob",
-      reportProgress: true
-    });
-
-    this.http.request(req).subscribe(event => {
+    this.downloader.download().subscribe(event => {
       if (event.type === HttpEventType.DownloadProgress) {
         this.percentDone = Math.round((100 * event.loaded) / event.total);
         console.log(`File is ${this.percentDone}% downloaded.`);
