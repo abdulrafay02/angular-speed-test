@@ -1,6 +1,6 @@
 <div class="text-center box">
-  <button class="btn btn-primary" (click)="download()">
-    <i class="fa fa-download"></i>
+  <button class="btn btn-primary" (click)="download()" [disabled]="percentDone > 0 && percentDone < 100">
+    <i class="fa fa-dashboard"></i>
   </button>
   <div class="bar">
     <div class="progress" [style.width.%]="percentDone"></div>
