@@ -1,6 +1,8 @@
 # angular-speed-test
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+A simple Angular project to test Internet Download Speed. This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+
+## [Demo](https://abdulrafay02.github.io/angular-speed-test/)
 
 ## Development server
 
