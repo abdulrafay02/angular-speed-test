@@ -1,30 +1,38 @@
-# angular-speed-test
+# Angular Speed Test ⚡
 
-A simple Angular project to test Internet Download Speed. This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+**🔗 [Live Demo](https://abdulrafay02.github.io/angular-speed-test/)**
 
-## [Demo](https://abdulrafay02.github.io/angular-speed-test/)
+A high-fidelity, ultra-lightweight internet speed test tool built entirely with Angular.
 
-## Development server
+Designed with brutalist geometry and precise visual mechanics, this app maps real-time network data streams directly to an immersive HUD without relying on bloated third-party graphical assets or heavy CSS frameworks.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Features & Architecture
 
-## Code scaffolding
+* **Parallel IO Orchestration:** Hits ultra-fast edge CDNs by orchestrating asynchronous chunked `fetch` payload streams, heavily saturating network capacity to uncover true download performance.
+* **Real-Time Data Visualization:** Streams live network metrics into a custom SVG-based interface, providing immediate visual feedback with minimal rendering overhead.
+* **Cinematic SVG Rendering:** Uses advanced SVG `feMerge` blur layers and viewport scaling to simulate neon/OLED-style light bleed.
+* **Separation of Concerns:** Clean architecture with distinct layers for domain models, network logic (`DownloadEngineService`), and polling control (`NetworkBenchmarkService`). Promotes maintainability and testability.
+* **Performance-First Design:** No heavy UI frameworks or graphical libraries, efficient change detection and rendering strategy.
+* **Hyper-Optimized Footprint:** Ships a premium experience in a highly compressed bundle of approximately **~50kB**.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Development Server
 
-## Build
+To inspect and launch the local environment:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+```bash
+npm install
+npm run start
+```
+Navigate your browser to `http://localhost:4200/`. The application strictly relies on standard Angular CLI compilation algorithms and will hot-reload upon saving.
 
-## Running unit tests
+## Production Build
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Outputs an optimized build to the `dist/` directory.
 
-## Running end-to-end tests
+```bash
+npm run build
+```
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Usage
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
-ng
+Click **"START"** to begin the test and monitor your network speed updating in real time.

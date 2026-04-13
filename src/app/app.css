@@ -1,0 +1,379 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 40%, #1b1616 0%, #0c0909 60%, #020202 100%);
+  color: #fff;
+  font-family: 'Titillium Web', 'Rajdhani', sans-serif;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hud-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+/* System Header - Centered rigidly directly above dashboard mechanics */
+.hud-header {
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: -4%;
+  /* Negative bleed pulling the arc graph tighter underneath it */
+  z-index: 50;
+}
+
+/* Removed .brand logic */
+
+.hud-header .title {
+  font-family: 'Rajdhani', sans-serif;
+  color: #FFF5D1;
+  font-size: 0.75rem;
+  /* Mirrors orbit-left diagnostic styling identically */
+  letter-spacing: 4px;
+  text-indent: 4px;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255, 202, 88, 0.5);
+}
+
+.hud-svg-container {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  max-height: 60vh;
+  /* Limits dynamic vertical growth safely padding controls */
+  aspect-ratio: 7 / 6;
+  /* flawless scaling linking 1:1 with SVG viewport constraints */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.scale-boot {
+  animation: scale-up 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes scale-up {
+  0% {
+    transform: scale(0.9) translateY(10px);
+  }
+
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.dash-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+}
+
+/* Decoupled Opacity animations explicitly avoiding Transform conflicts */
+.boot-anim {
+  opacity: 0;
+  animation: boot-up-fade 0.5s ease-out forwards;
+}
+
+.boot-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.boot-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.boot-delay-3 {
+  animation-delay: 0.4s;
+}
+
+.boot-delay-4 {
+  animation-delay: 0.6s;
+}
+
+@keyframes boot-up-fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.hud-html-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Main Display System: Centered optically and responsively tracking clamp */
+.hud-main-stat {
+  position: absolute;
+  top: 49%;
+  /* Baseline optics alignment perfectly in middle of rings */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(4rem, 12vmin, 7.5rem);
+  font-weight: 700;
+  line-height: 0.80;
+  letter-spacing: -2px;
+  color: #FFF5D1;
+  /* Subtle warm amber tint bridging white-out kinetics with theme aesthetics */
+  text-shadow: 0 0 25px rgba(255, 202, 88, 0.9),
+    0 0 60px rgba(241, 102, 85, 0.6);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hud-main-stat.running {
+  text-shadow: 0 0 35px rgba(255, 202, 88, 1.0), 0 0 80px rgba(241, 102, 85, 0.7);
+}
+
+.hud-main-unit {
+  position: absolute;
+  top: 59%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(0.7rem, 2vmin, 1rem);
+  font-weight: 700;
+  letter-spacing: 8px;
+  color: #FFF5D1;
+  /* Matched warm tint */
+  text-indent: 8px;
+  text-shadow: 0 0 15px rgba(255, 202, 88, 0.9), 0 0 30px rgba(255, 202, 88, 0.5);
+}
+
+.hud-bottom-stat {
+  position: absolute;
+  top: 77%;
+  /* Positioned explicitly beneath bottom SVG anchor geometrically (which ends around 73%) */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.hud-bottom-stat .lbl {
+  color: #3b7d6a;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+
+.hud-bottom-stat .val {
+  color: #4CC1A1;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow: 0 0 12px rgba(76, 193, 161, 0.6);
+  margin-top: 3px;
+}
+
+/* ORBIT DATA ARRAYS STAKED EXPLICITLY BEYOND SVG CURVES Responsively */
+.orbit-left {
+  position: absolute;
+  top: 50%;
+  right: 78%;
+  /* Forces array safely outwards relying squarely on 22% outer margin bounding box natively avoiding SVG */
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.orbit-right {
+  position: absolute;
+  top: 50%;
+  left: 78%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.icon-signal {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 15px;
+}
+
+.bar {
+  width: 5px;
+  background: #2a3136;
+  transition: all 0.3s ease;
+}
+
+.bar-1 {
+  height: 20%;
+}
+
+.bar-2 {
+  height: 40%;
+}
+
+.bar-3 {
+  height: 60%;
+}
+
+.bar-4 {
+  height: 80%;
+}
+
+.bar-5 {
+  height: 100%;
+}
+
+.bar.active {
+  background: #4CC1A1;
+  box-shadow: 0 0 15px rgba(76, 193, 161, 0.6);
+}
+
+.bar-1.active {
+  background: #E54743;
+  box-shadow: 0 0 15px rgba(229, 71, 67, 0.6);
+}
+
+.bar-2.active {
+  background: #E54743;
+  box-shadow: 0 0 15px rgba(229, 71, 67, 0.6);
+}
+
+.bar-3.active {
+  background: #F27A41;
+  box-shadow: 0 0 15px rgba(242, 122, 65, 0.6);
+}
+
+.bar-4.active {
+  background: #F6B854;
+  box-shadow: 0 0 15px rgba(246, 184, 84, 0.6);
+}
+
+/* Status String Engine */
+.orbit-status-text {
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.orbit-status-text {
+  color: #3b7d6a;
+}
+
+.orbit-status-text.running {
+  color: #F6B854;
+  text-shadow: 0 0 8px #F6B854;
+}
+
+.orbit-status-text.completed {
+  color: #4CC1A1;
+  text-shadow: 0 0 8px #4CC1A1;
+}
+
+.orbit-status-text.error {
+  color: #E54743;
+  text-shadow: 0 0 8px #E54743;
+}
+
+
+/* CONTROLS BOUNDARY */
+.hud-controls {
+  margin-top: 15px;
+  position: relative;
+  z-index: 20;
+}
+
+.engine-btn {
+  pointer-events: auto;
+  background: transparent;
+  border: 1px solid #4CC1A1;
+  color: #4CC1A1;
+  font-family: 'Titillium Web', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 5px;
+  padding: 10px 40px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(76, 193, 161, 0.15), inset 0 0 15px rgba(76, 193, 161, 0.05);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  text-transform: uppercase;
+}
+
+.engine-btn:hover {
+  background: rgba(76, 193, 161, 0.2);
+  color: #fff;
+  box-shadow: 0 0 25px rgba(76, 193, 161, 0.4), inset 0 0 15px rgba(76, 193, 161, 0.2);
+  transform: scale(1.05);
+}
+
+.engine-btn.danger {
+  border-color: #E54743;
+  color: #E54743;
+  box-shadow: 0 0 15px rgba(229, 71, 67, 0.15), inset 0 0 15px rgba(229, 71, 67, 0.05);
+}
+
+.engine-btn.danger:hover {
+  background: rgba(229, 71, 67, 0.2);
+  color: #fff;
+  box-shadow: 0 0 25px rgba(229, 71, 67, 0.4), inset 0 0 15px rgba(229, 71, 67, 0.2);
+}
+
+/* Fail-safe bounds protecting extremely minimal screen footprints */
+@media(max-width: 650px) {
+
+  /* On mobile widths, shift strictly side-pinned data to flush upper corners utilizing negative void space */
+  .orbit-left {
+    top: 18%;
+    right: auto;
+    left: 15%;
+    transform: none;
+    align-items: flex-start;
+  }
+
+  .orbit-right {
+    top: 18%;
+    left: auto;
+    right: 15%;
+    transform: none;
+    align-items: flex-end;
+  }
+
+  .engine-btn {
+    padding: 8px 30px;
+    font-size: 0.9rem;
+  }
+
+  .hud-header {
+    margin-bottom: 2%;
+    /* Eases spacing as container shrinks */
+  }
+}

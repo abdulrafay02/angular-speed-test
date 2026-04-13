@@ -1,0 +1,138 @@
+<div class="dash-background"></div>
+<div class="hud-wrapper">
+
+  <header class="hud-header boot-anim boot-delay-1">
+    <div class="title">SPEED TEST</div>
+  </header>
+
+  <div class="hud-svg-container scale-boot">
+    <!-- ViewBox identically governs all filter bounds overriding hardcoded SVG rendering limitations -->
+    <svg class="dash-svg" overflow="visible" viewBox="-350 -300 700 600" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <!-- Hot core gradient mapping red to amber -->
+        <linearGradient id="gradTopSegments" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#E54743" />
+          <stop offset="50%" stop-color="#F27A41" />
+          <stop offset="100%" stop-color="#F6B854" />
+        </linearGradient>
+
+        <filter id="glowTeal" filterUnits="userSpaceOnUse" x="-350" y="-300" width="700" height="600">
+          <feGaussianBlur stdDeviation="4" result="blur1" />
+          <feGaussianBlur stdDeviation="14" result="blur2" />
+          <feMerge>
+            <feMergeNode in="blur2" />
+            <feMergeNode in="blur1" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="glowRed" filterUnits="userSpaceOnUse" x="-350" y="-300" width="700" height="600">
+          <feGaussianBlur stdDeviation="6" result="blur1" />
+          <feGaussianBlur stdDeviation="22" result="blur2" />
+          <feMerge>
+            <feMergeNode in="blur2" />
+            <feMergeNode in="blur1" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="glowAmber" filterUnits="userSpaceOnUse" x="-350" y="-300" width="700" height="600">
+          <feGaussianBlur stdDeviation="9" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+
+        <mask id="progressMask" maskUnits="userSpaceOnUse" x="-350" y="-300" width="700" height="600">
+          <path d="M -77.4 -110.5 A 135 135 0 0 1 77.4 -110.5" stroke="white" stroke-width="80" fill="none"
+            stroke-dasharray="165" stroke-dashoffset="165" [attr.stroke-dashoffset]="165 - (165 * state.progress / 100)"
+            style="transition: stroke-dashoffset 0.1s linear;" />
+        </mask>
+      </defs>
+
+      <!-- BASE EMPTY TRACKS -->
+      <path d="M -77.4 -110.5 A 135 135 0 0 1 77.4 -110.5" stroke="#213336" stroke-width="25" fill="none"
+        stroke-dasharray="12.89 4" />
+
+      <path d="M 116.6 116.6 A 165 165 0 0 0 116.6 -116.6" stroke="#1d1b11" stroke-width="12" fill="none" />
+      <path d="M 106 106 A 150 150 0 0 0 106 -106" stroke="#F6B854" stroke-width="2" fill="none" opacity="0.3" />
+
+      <path d="M -116.6 116.6 A 165 165 0 0 1 -116.6 -116.6" stroke="#2a1515" stroke-width="12" fill="none" />
+      <path d="M -106 106 A 150 150 0 0 1 -106 -106" stroke="#E54743" stroke-width="2" fill="none" opacity="0.5" />
+
+      <!-- BOTTOM ECO ANCHOR TRACK -->
+      <path d="M -77.4 110.5 A 135 135 0 0 0 77.4 110.5" stroke="#122a24" stroke-width="14" fill="none" />
+      <path d="M -77.4 110.5 A 135 135 0 0 0 77.4 110.5" stroke="#4CC1A1" stroke-width="14" fill="none"
+        filter="url(#glowTeal)" opacity="0.6" />
+      <path d="M -77.4 110.5 A 135 135 0 0 0 77.4 110.5" stroke="#4CC1A1" stroke-width="14" fill="none" opacity="0.9" />
+
+      <!-- ACTIVE FILL LAYERS -->
+      <path d="M -77.4 -110.5 A 135 135 0 0 1 77.4 -110.5" stroke="url(#gradTopSegments)" stroke-width="25" fill="none"
+        stroke-dasharray="12.89 4" mask="url(#progressMask)" filter="url(#glowAmber)" opacity="0.95" />
+
+      <path d="M -77.4 -110.5 A 135 135 0 0 1 77.4 -110.5" stroke="url(#gradTopSegments)" stroke-width="25" fill="none"
+        stroke-dasharray="12.89 4" mask="url(#progressMask)" />
+
+      <!-- Left Sweep dynamically glowing Red -->
+      <path d="M -116.6 116.6 A 165 165 0 0 1 -116.6 -116.6" stroke="#FF5A55" stroke-width="12" fill="none"
+        stroke-dasharray="260" stroke-dashoffset="260" [attr.stroke-dashoffset]="260 - (260 * state.progress / 100)"
+        style="transition: stroke-dashoffset 0.1s linear;" filter="url(#glowRed)" opacity="0.95" />
+      <path d="M -116.6 116.6 A 165 165 0 0 1 -116.6 -116.6" stroke="#FF5A55" stroke-width="12" fill="none"
+        stroke-dasharray="260" stroke-dashoffset="260" [attr.stroke-dashoffset]="260 - (260 * state.progress / 100)"
+        style="transition: stroke-dashoffset 0.1s linear;" />
+
+      <!-- Right Sweep dynamically glowing Amber -->
+      <path d="M 116.6 116.6 A 165 165 0 0 0 116.6 -116.6" stroke="#FFCA58" stroke-width="12" fill="none"
+        stroke-dasharray="260" stroke-dashoffset="260" [attr.stroke-dashoffset]="260 - (260 * state.progress / 100)"
+        style="transition: stroke-dashoffset 0.1s linear;" filter="url(#glowAmber)" opacity="0.95" />
+      <path d="M 116.6 116.6 A 165 165 0 0 0 116.6 -116.6" stroke="#FFCA58" stroke-width="12" fill="none"
+        stroke-dasharray="260" stroke-dashoffset="260" [attr.stroke-dashoffset]="260 - (260 * state.progress / 100)"
+        style="transition: stroke-dashoffset 0.1s linear;" />
+
+      <!-- Decorator Anchors -->
+      <g stroke="#4CC1A1" stroke-width="2" opacity="0.5">
+        <line x1="-80" y1="120" x2="-65" y2="120" stroke-linecap="square" />
+        <line x1="80" y1="120" x2="65" y2="120" stroke-linecap="square" />
+      </g>
+    </svg>
+
+    <div class="hud-html-layer">
+
+      <!-- Visually & mathematically dead-centered reading element -->
+      <div class="hud-main-stat boot-anim boot-delay-2" [class.running]="state.status === 'running'">
+        {{ state.currentSpeedMbps | number:'1.0-0' }}
+      </div>
+
+      <div class="hud-main-unit boot-anim boot-delay-2">
+        MB / S
+      </div>
+
+      <div class="hud-bottom-stat boot-anim boot-delay-3">
+        <div class="lbl">DISTANCE</div>
+        <div class="val">{{ state.downloadedMb | number:'1.1-1' }} MB <span
+            style="font-size: 0.6em; opacity: 0.6;">DL</span></div>
+      </div>
+
+      <div class="orbit-left boot-anim boot-delay-3">
+        <div class="icon-signal">
+          <div class="bar bar-1" [class.active]="state.progress > 0"></div>
+          <div class="bar bar-2" [class.active]="state.progress > 25"></div>
+          <div class="bar bar-3" [class.active]="state.progress > 50"></div>
+          <div class="bar bar-4" [class.active]="state.progress > 75"></div>
+          <div class="bar bar-5" [class.active]="state.progress >= 99"></div>
+        </div>
+      </div>
+
+      <div class="orbit-right boot-anim boot-delay-3">
+        <div class="orbit-status-text" [ngClass]="state.status">{{ state.status === 'idle' ? 'STANDBY' : state.status |
+          uppercase }}</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="hud-controls boot-anim boot-delay-4">
+    <button class="engine-btn" *ngIf="state.status !== 'running'" (click)="startDownload()">
+      {{ state.status === 'completed' ? 'RESTART' : 'START' }}
+    </button>
+    <button class="engine-btn danger" *ngIf="state.status === 'running'" (click)="cancelDownload()">
+      ABORT
+    </button>
+  </div>
+</div>
