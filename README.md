@@ -39,3 +39,7 @@ npm run build
 ## Usage
 
 Click **"START"** to begin the test and monitor your network speed updating in real time.
+
+## Versioning
+
+This project follows semantic versioning (v1.0.0, v2.0.0, etc.) to track architectural improvements and performance upgrades. For a detailed history of updates and fixes, please refer to the [CHANGELOG.md](CHANGELOG.md).
