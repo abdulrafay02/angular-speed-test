@@ -1,8 +1,11 @@
 # Angular Speed Test ⚡
 
+A high-fidelity, ultra-lightweight internet speed test tool built entirely with Angular.
+
 **🔗 [Live Demo](https://abdulrafay02.github.io/angular-speed-test/)**
 
-A high-fidelity, ultra-lightweight internet speed test tool built entirely with Angular.
+## Preview
+![demo](https://github.com/user-attachments/assets/1992299a-c24b-4258-973b-16b2dea711f8)
 
 Designed with brutalist geometry and precise visual mechanics, this app maps real-time network data streams directly to an immersive HUD without relying on bloated third-party graphical assets or heavy CSS frameworks.
 
