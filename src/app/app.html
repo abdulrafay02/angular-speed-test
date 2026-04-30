@@ -128,10 +128,10 @@
   </div>
 
   <div class="hud-controls boot-anim boot-delay-4">
-    <button class="engine-btn" *ngIf="state.status !== 'running'" (click)="startDownload()">
+    <button class="engine-btn" *ngIf="state.status !== 'running'" (mouseenter)="playHover()" (click)="startDownload()">
       {{ state.status === 'completed' ? 'RESTART' : 'START' }}
     </button>
-    <button class="engine-btn danger" *ngIf="state.status === 'running'" (click)="cancelDownload()">
+    <button class="engine-btn danger" *ngIf="state.status === 'running'" (mouseenter)="playHover()" (click)="cancelDownload()">
       ABORT
     </button>
   </div>

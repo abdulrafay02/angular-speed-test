@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { NetworkBenchmarkService } from './network-benchmark.service';
+import { AudioService } from './services/audio.service';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +10,7 @@ import { NetworkBenchmarkService } from './network-benchmark.service';
 })
 export class App {
   benchmarkService = inject(NetworkBenchmarkService);
+  audioService = inject(AudioService);
 
   get state() {
     return this.benchmarkService.state();
@@ -20,5 +22,9 @@ export class App {
 
   cancelDownload() {
     this.benchmarkService.cancel();
+  }
+
+  playHover() {
+    this.audioService.playHover();
   }
 }
