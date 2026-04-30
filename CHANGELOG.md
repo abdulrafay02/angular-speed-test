@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-04-30
+
+### Added
+- **Cinematic Audio Engine**: Integrated the Web Audio API to simulate a heavy, turbocharged inline-6 engine (RB26 Skyline) that physically syncs with the benchmark progress.
+- **Dynamic Gear Shifting**: Engine audio automatically shifts gears based on benchmark duration, complete with an aggressive white-noise compressor surge ("stutututu") during RPM drops.
+- **Time-Based Benchmarking**: Overhauled the core network test to use a fixed duration (7.0 seconds) instead of a fixed payload size, guaranteeing perfect audio synchronization and UX consistency across all internet speeds.
+
+### Changed
+- `DownloadEngineService` now uses infinite fetch streams to guarantee 100% network saturation for the full duration of the test.
+
 ## [2.0.0] - 2026-04-13
 
 ### Added
