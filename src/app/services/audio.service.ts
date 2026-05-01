@@ -32,7 +32,7 @@ export class AudioService {
     const deg = Math.PI / 180;
     for (let i = 0; i < n_samples; ++i) {
       const x = (i * 2) / n_samples - 1;
-      curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+      curve[i] = (((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x))) * 4; // Multiplied by 4 to restore volume lost to distortion
     }
     return curve;
   }
@@ -125,27 +125,43 @@ export class AudioService {
 
     // --- RB26 Engine ---
     this.humOscillator = this.audioCtx.createOscillator();
+    this.subOscillator = this.audioCtx.createOscillator();
     this.humGain = this.audioCtx.createGain();
-    this.humOscillator.type = 'sawtooth';
     
-    // Skyline inline-6 idles smoothly but high
-    this.humOscillator.frequency.setValueAtTime(80, now);
-    // Simulate revving up as the test runs!
-    this.humOscillator.frequency.linearRampToValueAtTime(300, now + 3.5); 
+    // Detuned sawtooths create a mechanical phase beating (chorus) effect that sounds much more organic
+    this.humOscillator.type = 'sawtooth';
+    this.subOscillator.type = 'sawtooth';
+    
+    // Idle around 50Hz (approx 1000 RPM on a 6cyl)
+    this.humOscillator.frequency.setValueAtTime(50, now);
+    this.humOscillator.frequency.linearRampToValueAtTime(350, now + 3.5); 
+    
+    // Slightly detuned to simulate physical engine variation
+    this.subOscillator.frequency.setValueAtTime(51.5, now);
+    this.subOscillator.frequency.linearRampToValueAtTime(356, now + 3.5);
 
     const filter = this.audioCtx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(200, now);
-    filter.frequency.linearRampToValueAtTime(800, now + 3.5); // Opens up as revs climb
+    filter.frequency.setValueAtTime(150, now); // Muffled at idle
+    filter.frequency.linearRampToValueAtTime(1200, now + 3.5); // Opens up loudly at high RPM
+    filter.Q.value = 2; // Slight resonance for exhaust pipe character
+
+    const hpFilter = this.audioCtx.createBiquadFilter();
+    hpFilter.type = 'highpass';
+    hpFilter.frequency.setValueAtTime(40, now); // Remove muddy sub frequencies
 
     this.humGain.gain.setValueAtTime(0, now);
     this.humGain.gain.linearRampToValueAtTime(0, now + 0.5); // wait for crank
-    this.humGain.gain.linearRampToValueAtTime(0.15, now + 1.0);
+    this.humGain.gain.linearRampToValueAtTime(0.8, now + 1.0); // Loud and clear
 
     this.humOscillator.connect(filter);
-    filter.connect(this.humGain);
+    this.subOscillator.connect(filter);
+    filter.connect(hpFilter);
+    hpFilter.connect(this.humGain);
     this.humGain.connect(this.audioCtx.destination);
+    
     this.humOscillator.start(now);
+    this.subOscillator.start(now);
 
     // --- Enhanced Turbo Spool ---
     this.turboOsc = this.audioCtx.createOscillator();
@@ -176,10 +192,18 @@ export class AudioService {
 
     // 2. RPM Drops (shift gear)
     try { this.humOscillator.frequency.cancelScheduledValues(now); } catch(e){}
-    this.humOscillator.frequency.setValueAtTime(300, now);
-    this.humOscillator.frequency.exponentialRampToValueAtTime(100, now + 0.3);
+    try { this.subOscillator?.frequency.cancelScheduledValues(now); } catch(e){}
+
+    this.humOscillator.frequency.setValueAtTime(350, now);
+    this.humOscillator.frequency.exponentialRampToValueAtTime(120, now + 0.3);
     // Rev back up over the next interval
-    this.humOscillator.frequency.linearRampToValueAtTime(300, now + 3.5);
+    this.humOscillator.frequency.linearRampToValueAtTime(350, now + 3.5);
+
+    if (this.subOscillator) {
+      this.subOscillator.frequency.setValueAtTime(356, now);
+      this.subOscillator.frequency.exponentialRampToValueAtTime(122, now + 0.3);
+      this.subOscillator.frequency.linearRampToValueAtTime(356, now + 3.5);
+    }
 
     // 3. Turbo dump
     try { this.turboOsc.frequency.cancelScheduledValues(now); } catch(e){}
@@ -222,7 +246,7 @@ export class AudioService {
       spinOsc.frequency.setValueAtTime(this.humOscillator?.frequency.value || 200, now);
       spinOsc.frequency.exponentialRampToValueAtTime(20, now + 0.8);
       
-      spinGain.gain.setValueAtTime(this.humGain.gain.value || 0.15, now);
+      spinGain.gain.setValueAtTime(this.humGain.gain.value || 0.6, now);
       spinGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5); // Fade out quicker
       
       spinOsc.connect(spinGain);
@@ -232,13 +256,16 @@ export class AudioService {
       spinOsc.stop(now + 1.0);
       
       const oldHumOsc = this.humOscillator;
+      const oldSubOsc = this.subOscillator;
       const oldTurboOsc = this.turboOsc;
       setTimeout(() => {
         if (oldHumOsc) { try { oldHumOsc.stop(); oldHumOsc.disconnect(); } catch(e) {} }
+        if (oldSubOsc) { try { oldSubOsc.stop(); oldSubOsc.disconnect(); } catch(e) {} }
         if (oldTurboOsc) { try { oldTurboOsc.stop(); oldTurboOsc.disconnect(); } catch(e) {} }
       }, 150);
 
       this.humOscillator = null;
+      this.subOscillator = null;
       this.humGain = null;
       this.turboOsc = null;
       this.turboGain = null;
@@ -249,7 +276,7 @@ export class AudioService {
     if (!this.audioCtx) return;
 
     // We use a combination of White Noise and a high-frequency Sine wave to simulate compressed air flutter
-    const bufferSize = this.audioCtx.sampleRate * 1;
+    const bufferSize = this.audioCtx.sampleRate * 2;
     const noiseBuffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
@@ -260,30 +287,32 @@ export class AudioService {
 
     const whistle = this.audioCtx.createOscillator();
     whistle.type = 'sine';
-    whistle.frequency.setValueAtTime(3500, now);
-    whistle.frequency.exponentialRampToValueAtTime(800, now + 0.8);
+    whistle.frequency.setValueAtTime(4500, now);
+    whistle.frequency.exponentialRampToValueAtTime(1000, now + 1.5);
 
     const filter = this.audioCtx.createBiquadFilter();
     filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(3000, now);
-    filter.frequency.exponentialRampToValueAtTime(800, now + 0.8);
-    filter.Q.value = 15;
+    filter.frequency.setValueAtTime(4000, now);
+    filter.frequency.exponentialRampToValueAtTime(800, now + 1.5);
+    filter.Q.value = 12; // High resonance for the 'whistle' characteristic
 
     const envelope = this.audioCtx.createGain();
     envelope.gain.setValueAtTime(0, now);
-    envelope.gain.linearRampToValueAtTime(0.25, now + 0.05); // Lowered to prevent master bus clipping
-    envelope.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+    envelope.gain.linearRampToValueAtTime(0.7, now + 0.03); // Massive volume increase for the initial burst
+    envelope.gain.linearRampToValueAtTime(0.35, now + 0.6); // Hold much louder to let flutter be heard over engine
+    envelope.gain.exponentialRampToValueAtTime(0.001, now + 1.5); // Final decay
 
+    // Flutter LFO
     const chopper = this.audioCtx.createOscillator();
-    chopper.type = 'square';
-    chopper.frequency.setValueAtTime(18, now); // Very fast flutter
-    chopper.frequency.linearRampToValueAtTime(8, now + 0.8); 
+    chopper.type = 'square'; // Square wave for sharp, distinct gaps between the 'tu' sounds
+    chopper.frequency.setValueAtTime(14, now); // Start fast
+    chopper.frequency.linearRampToValueAtTime(5, now + 1.5); // Slow down as pressure drops
 
     const tremoloGain = this.audioCtx.createGain();
-    tremoloGain.gain.value = 1;
+    tremoloGain.gain.value = 0.5; // 50% modulation depth
 
     const amGain = this.audioCtx.createGain();
-    amGain.gain.value = 0; 
+    amGain.gain.value = 0.5; // Base volume is 50%, so it oscillates perfectly between 0 and 100%
     
     chopper.connect(tremoloGain);
     tremoloGain.connect(amGain.gain);
@@ -297,10 +326,10 @@ export class AudioService {
     amGain.connect(this.audioCtx.destination);
 
     chopper.start(now);
-    chopper.stop(now + 0.8);
+    chopper.stop(now + 1.5);
     noise.start(now);
-    noise.stop(now + 0.8);
+    noise.stop(now + 1.5);
     whistle.start(now);
-    whistle.stop(now + 0.8);
+    whistle.stop(now + 1.5);
   }
 }
