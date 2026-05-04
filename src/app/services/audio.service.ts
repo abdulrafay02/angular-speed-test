@@ -5,6 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class AudioService {
   private audioCtx: AudioContext | null = null;
+  private masterGain: GainNode | null = null;
+  public isMuted = false;
   
   private humOscillator: OscillatorNode | null = null;
   private subOscillator: OscillatorNode | null = null;
@@ -18,9 +20,20 @@ export class AudioService {
   private initContext() {
     if (!this.audioCtx) {
       this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.masterGain = this.audioCtx.createGain();
+      this.masterGain.connect(this.audioCtx.destination);
+      this.masterGain.gain.value = this.isMuted ? 0 : 1;
     }
     if (this.audioCtx.state === 'suspended') {
       this.audioCtx.resume();
+    }
+  }
+
+  toggleMute() {
+    this.isMuted = !this.isMuted;
+    if (this.masterGain && this.audioCtx) {
+      // Small ramp to prevent audio popping
+      this.masterGain.gain.linearRampToValueAtTime(this.isMuted ? 0 : 1, this.audioCtx.currentTime + 0.05);
     }
   }
 
@@ -51,7 +64,7 @@ export class AudioService {
     gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.03);
 
     osc.connect(gain);
-    gain.connect(this.audioCtx.destination);
+    gain.connect(this.masterGain!);
 
     osc.start();
     osc.stop(this.audioCtx.currentTime + 0.03);
@@ -88,7 +101,7 @@ export class AudioService {
 
     osc.connect(filter);
     filter.connect(gain);
-    gain.connect(this.audioCtx.destination);
+    gain.connect(this.masterGain!);
 
     osc.start(now);
     osc.stop(now + 0.9);
@@ -110,7 +123,7 @@ export class AudioService {
     gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.05);
 
     osc.connect(gain);
-    gain.connect(this.audioCtx.destination);
+    gain.connect(this.masterGain!);
 
     osc.start();
     osc.stop(this.audioCtx.currentTime + 0.05);
@@ -158,7 +171,7 @@ export class AudioService {
     this.subOscillator.connect(filter);
     filter.connect(hpFilter);
     hpFilter.connect(this.humGain);
-    this.humGain.connect(this.audioCtx.destination);
+    this.humGain.connect(this.masterGain!);
     
     this.humOscillator.start(now);
     this.subOscillator.start(now);
@@ -176,7 +189,7 @@ export class AudioService {
     this.turboGain.gain.linearRampToValueAtTime(0.04, now + 3.0); 
 
     this.turboOsc.connect(this.turboGain);
-    this.turboGain.connect(this.audioCtx.destination);
+    this.turboGain.connect(this.masterGain!);
     this.turboOsc.start(now);
 
     this.shiftInterval = setInterval(() => this.executeGearShift(), 3500);
@@ -250,7 +263,7 @@ export class AudioService {
       spinGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5); // Fade out quicker
       
       spinOsc.connect(spinGain);
-      spinGain.connect(this.audioCtx.destination);
+      spinGain.connect(this.masterGain!);
       
       spinOsc.start(now);
       spinOsc.stop(now + 1.0);
@@ -323,7 +336,7 @@ export class AudioService {
     
     filter.connect(envelope);
     envelope.connect(amGain);
-    amGain.connect(this.audioCtx.destination);
+    amGain.connect(this.masterGain!);
 
     chopper.start(now);
     chopper.stop(now + 1.5);
