@@ -5,6 +5,7 @@
   align-items: center;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   background: radial-gradient(circle at 50% 40%, #1b1616 0%, #0c0909 60%, #020202 100%);
   color: #fff;
   font-family: 'Titillium Web', 'Rajdhani', sans-serif;
@@ -55,6 +56,7 @@
   width: 100%;
   max-width: 650px;
   max-height: 60vh;
+  max-height: 60dvh;
   /* Limits dynamic vertical growth safely padding controls */
   aspect-ratio: 7 / 6;
   /* flawless scaling linking 1:1 with SVG viewport constraints */
