@@ -49,6 +49,27 @@
   text-indent: 4px;
   font-weight: 700;
   text-shadow: 0 0 8px rgba(255, 202, 88, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-header .title .app-logo {
+  width: 20px;
+  height: 20px;
+  filter: drop-shadow(0 0 10px rgba(255, 202, 88, 0.8));
+  animation: pulse-glow 2s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% {
+    filter: drop-shadow(0 0 5px rgba(255, 202, 88, 0.5));
+  }
+
+  100% {
+    filter: drop-shadow(0 0 15px rgba(255, 202, 88, 1));
+  }
 }
 
 .hud-svg-container {
